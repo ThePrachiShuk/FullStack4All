@@ -632,6 +632,22 @@ const App: React.FC = () => {
 				{activeTab === "chat" && <AiChat />}
 			</main>
 
+			{/* Copyright Footer */}
+			<footer className="bg-slate-800 border-t border-slate-700 py-3 px-6 flex justify-center items-center">
+				<div className="text-slate-400 text-sm">
+					<span className="text-slate-300">Copyright © 2025</span>
+					<span className="mx-2">|</span>
+					<span>All Rights Reserved</span>
+					<span className="mx-2">|</span>
+					<span>
+						Built by{" "}
+						<span className="text-indigo-400 font-medium">
+							Team VibeKillers
+						</span>
+					</span>
+				</div>
+			</footer>
+
 			<CodePreviewModal
 				title="Generated Frontend Code (TSX)"
 				code={generatedFrontendCode}
