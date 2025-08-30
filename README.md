@@ -1,6 +1,3 @@
-git commit -m "Ready for deployment"
-git push origin main
-
 # 🧠 AI Full Stack Builder
 
 AI Full Stack Builder is a modern, open-source web app for visually building landing pages and web components using drag-and-drop, resize, and AI-powered features. It’s built with React, TypeScript, Vite, and Tailwind CSS, and integrates with DeepSeek R1 for smart component suggestions.
@@ -96,4 +93,8 @@ npm run build
 
 ---
 
-**Ready to build with AI? Start now!**
+## ⚖️ License  
+
+© 2025 **Vibe Killers** (Arnav Bansal, Nakul Tanwar, Prachetas Shukla, Ranbir Singh)<br>
+All rights reserved. This project is for educational and research purposes only.<br>
+Unauthorized copying, modification, or distribution of this project is prohibited without explicit permission.
