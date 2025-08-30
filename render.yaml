@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: ai-full-stack-builder
+    env: node
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start:prod
+    envVars:
+      - key: VITE_DEEPSEEK_API_KEY
+        sync: false
+      - key: NODE_ENV
+        value: production
+    staticPublishPath: ./dist
+    healthCheckPath: /
+    disk:
+      name: web-disk
+      mountPath: /opt/render/project/dist
+      sizeGB: 1
