@@ -360,18 +360,21 @@ export const Canvas: React.FC<CanvasProps> = ({
 	// Check if content extends beyond viewport
 	React.useEffect(() => {
 		const checkScrollNeeded = () => {
-			const scrollContainer = document.querySelector('.canvas-scroll-container') as HTMLElement;
+			const scrollContainer = document.querySelector(
+				".canvas-scroll-container"
+			) as HTMLElement;
 			if (scrollContainer) {
-				const hasScroll = scrollContainer.scrollHeight > scrollContainer.clientHeight;
+				const hasScroll =
+					scrollContainer.scrollHeight > scrollContainer.clientHeight;
 				setShowScrollIndicator(hasScroll);
 			}
 		};
 
 		// Check on mount and when sections change
 		setTimeout(checkScrollNeeded, 100);
-		window.addEventListener('resize', checkScrollNeeded);
-		
-		return () => window.removeEventListener('resize', checkScrollNeeded);
+		window.addEventListener("resize", checkScrollNeeded);
+
+		return () => window.removeEventListener("resize", checkScrollNeeded);
 	}, [sections]);
 
 	// Handle drop from component palette
@@ -396,17 +399,17 @@ export const Canvas: React.FC<CanvasProps> = ({
 
 	return (
 		<div
-			className="canvas-scroll-container flex-1 h-full overflow-y-auto overflow-x-hidden bg-slate-900"
+			className="canvas-scroll-container flex-1 h-full overflow-y-auto overflow-x-hidden bg-dots"
 			onDragOver={handleCanvasDragOver}
 			onDrop={handleCanvasDrop}
 			style={{
-				scrollBehavior: 'smooth',
+				scrollBehavior: "smooth",
 				// Ensure proper scrolling on all devices
-				WebkitOverflowScrolling: 'touch'
+				WebkitOverflowScrolling: "touch",
 			}}
 		>
 			<div className="p-8">
-				<div className="max-w-4xl mx-auto bg-dots rounded-lg p-6 min-h-screen">
+				<div className="max-w-4xl mx-auto bg-transparent rounded-lg p-6 min-h-screen border border-slate-700/30">
 					{/* Header with Add Section button */}
 					<div className="mb-6 flex justify-between items-center sticky top-0 bg-slate-900/90 backdrop-blur-sm z-10 py-4 -mt-4 rounded-lg">
 						<h2 className="text-lg font-semibold text-slate-300 flex items-center gap-2">
@@ -427,10 +430,40 @@ export const Canvas: React.FC<CanvasProps> = ({
 						</h2>
 						<button
 							onClick={onAddSection}
-						className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-lg flex items-center gap-2"
+							className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-lg flex items-center gap-2"
+						>
+							<svg
+								className="w-4 h-4"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth={2}
+									d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+								/>
+							</svg>
+							Add Section
+						</button>
+					</div>
+
+					{/* Scroll to Top Button - Fixed Position */}
+					<button
+						onClick={() => {
+							const scrollContainer = document.querySelector(
+								".canvas-scroll-container"
+							);
+							if (scrollContainer) {
+								scrollContainer.scrollTo({ top: 0, behavior: "smooth" });
+							}
+						}}
+						className="fixed top-24 right-8 z-50 p-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-full shadow-lg transition-all opacity-75 hover:opacity-100"
+						title="Scroll to Top"
 					>
 						<svg
-							className="w-4 h-4"
+							className="w-5 h-5"
 							fill="none"
 							stroke="currentColor"
 							viewBox="0 0 24 24"
@@ -439,33 +472,15 @@ export const Canvas: React.FC<CanvasProps> = ({
 								strokeLinecap="round"
 								strokeLinejoin="round"
 								strokeWidth={2}
-								d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+								d="M5 10l7-7m0 0l7 7m-7-7v18"
 							/>
 						</svg>
-						Add Section
 					</button>
-				</div>
 
-				{/* Scroll to Top Button - Fixed Position */}
-				<button
-					onClick={() => {
-						const scrollContainer = document.querySelector('.canvas-scroll-container');
-						if (scrollContainer) {
-							scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
-						}
-					}}
-					className="fixed top-24 right-8 z-50 p-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-full shadow-lg transition-all opacity-75 hover:opacity-100"
-					title="Scroll to Top"
-				>
-					<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
-					</svg>
-				</button>
-
-				{/* Show section-based layout */}
-				{sections.length === 0 ? (
-					<div
-						className={`
+					{/* Show section-based layout */}
+					{sections.length === 0 ? (
+						<div
+							className={`
 							flex items-center justify-center h-96 border-2 border-dashed rounded-lg transition-all
 							${
 								isDraggingNewComponent
@@ -473,73 +488,10 @@ export const Canvas: React.FC<CanvasProps> = ({
 									: "border-slate-700"
 							}
 						`}
-					>
-						<div className="text-center">
-							<svg
-								className="w-16 h-16 mx-auto mb-4 text-slate-500"
-								fill="none"
-								stroke="currentColor"
-								viewBox="0 0 24 24"
-							>
-								<path
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									strokeWidth={1.5}
-									d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"
-								/>
-							</svg>
-							<p className="text-slate-500 text-lg mb-4 font-medium">
-								{isDraggingNewComponent ? (
-									<span className="flex items-center gap-2 justify-center">
-										<svg
-											className="w-5 h-5"
-											fill="none"
-											stroke="currentColor"
-											viewBox="0 0 24 24"
-										>
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												strokeWidth={2}
-												d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-											/>
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												strokeWidth={2}
-												d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-											/>
-										</svg>
-										Drop your component here!
-									</span>
-								) : (
-									<span className="flex items-center gap-2 justify-center">
-										<svg
-											className="w-5 h-5"
-											fill="none"
-											stroke="currentColor"
-											viewBox="0 0 24 24"
-										>
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												strokeWidth={2}
-												d="M13 10V3L4 14h7v7l9-11h-7z"
-											/>
-										</svg>
-										Let's start building!
-									</span>
-								)}
-							</p>
-							<p className="text-slate-600 text-sm mb-6">
-								Create your first section to organize your components
-							</p>
-							<button
-								onClick={onAddSection}
-								className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white px-6 py-3 rounded-lg font-medium transition-all shadow-lg flex items-center gap-2 mx-auto"
-							>
+						>
+							<div className="text-center">
 								<svg
-									className="w-4 h-4"
+									className="w-16 h-16 mx-auto mb-4 text-slate-500"
 									fill="none"
 									stroke="currentColor"
 									viewBox="0 0 24 24"
@@ -547,82 +499,15 @@ export const Canvas: React.FC<CanvasProps> = ({
 									<path
 										strokeLinecap="round"
 										strokeLinejoin="round"
-										strokeWidth={2}
-										d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+										strokeWidth={1.5}
+										d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"
 									/>
 								</svg>
-								Create First Section
-							</button>
-						</div>
-					</div>
-				) : (
-					/* Show sections with components */
-					<div className="space-y-6">
-						{sections.map((section) => (
-							<div
-								key={section.id}
-								onClick={() => onSelectSection(section.id)}
-								className={`relative w-full rounded-lg border-2 transition-all duration-200 mb-6 cursor-pointer ${
-									selectedSectionId === section.id
-										? "border-indigo-500 bg-indigo-500/10"
-										: "border-slate-600 hover:border-slate-500"
-								}`}
-								style={{
-									backgroundColor: section.backgroundColor || "#1e293b",
-									padding: section.padding || "2rem 1rem",
-									minHeight: section.minHeight || "200px",
-								}}
-								onDragOver={(e) => {
-									e.preventDefault();
-									e.dataTransfer.dropEffect = "copy";
-								}}
-								onDrop={(e) => {
-									e.preventDefault();
-									e.stopPropagation(); // Prevent bubbling to parent Canvas
-									const componentType = e.dataTransfer.getData(
-										"application/component-type"
-									) as ComponentType;
-									if (componentType) {
-										onAddComponent(componentType, undefined, section.id);
-									}
-									setIsDraggingNewComponent(null);
-									draggedComponentType.current = null;
-								}}
-							>
-								{/* Section Header */}
-								<div
-									className={`absolute -top-6 left-4 px-3 py-1 rounded-t-lg shadow-lg ${
-										selectedSectionId === section.id
-											? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white"
-											: "bg-slate-700"
-									}`}
-								>
-									<span
-										className={`text-sm font-medium flex items-center gap-2 ${
-											selectedSectionId === section.id
-												? "text-white"
-												: "text-slate-300"
-										}`}
-									>
-										<svg
-											className="w-4 h-4"
-											fill="none"
-											stroke="currentColor"
-											viewBox="0 0 24 24"
-										>
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												strokeWidth={2}
-												d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-											/>
-										</svg>
-										{section.name}
-									</span>
-									{selectedSectionId === section.id && (
-										<span className="text-xs opacity-75 flex items-center gap-1">
+								<p className="text-slate-500 text-lg mb-4 font-medium">
+									{isDraggingNewComponent ? (
+										<span className="flex items-center gap-2 justify-center">
 											<svg
-												className="w-3 h-3"
+												className="w-5 h-5"
 												fill="none"
 												stroke="currentColor"
 												viewBox="0 0 24 24"
@@ -631,64 +516,204 @@ export const Canvas: React.FC<CanvasProps> = ({
 													strokeLinecap="round"
 													strokeLinejoin="round"
 													strokeWidth={2}
-													d="M5 3l14 9-14 9V3z"
+													d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+												/>
+												<path
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													strokeWidth={2}
+													d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
 												/>
 											</svg>
-											Active Section
+											Drop your component here!
+										</span>
+									) : (
+										<span className="flex items-center gap-2 justify-center">
+											<svg
+												className="w-5 h-5"
+												fill="none"
+												stroke="currentColor"
+												viewBox="0 0 24 24"
+											>
+												<path
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													strokeWidth={2}
+													d="M13 10V3L4 14h7v7l9-11h-7z"
+												/>
+											</svg>
+											Let's start building!
 										</span>
 									)}
-								</div>
-
-								{/* Section Content */}
-								<div className="relative min-h-full">
-									{components.filter((comp) => comp.sectionId === section.id)
-										.length === 0 ? (
-										<div className="flex items-center justify-center h-32 rounded-lg border-2 border-dashed border-slate-600 bg-slate-800/30">
-											<div className="text-center">
-												<div className="text-4xl mb-2">🎯</div>
-												<p className="text-slate-500 font-medium">
-													Drop components here!
-												</p>
-												<p className="text-slate-600 text-sm mt-1">
-													Drag from the left panel or click "Add" button
-												</p>
-											</div>
-										</div>
-									) : (
-										<div className="space-y-4">
-											{components
-												.filter((comp) => comp.sectionId === section.id)
-												.map((comp) => (
-													<RenderedComponent
-														key={comp.id}
-														component={comp}
-														isSelected={selectedComponentId === comp.id}
-														onSelect={() => onSelectComponent(comp.id)}
-														onDelete={() => onDeleteComponent(comp.id)}
-														onUpdateComponent={onUpdateComponent}
-													/>
-												))}
-										</div>
-									)}
-								</div>
-							</div>
-						))}
-					</div>
-				)}
-				
-				{/* Scroll Indicator - shows when there's more content below */}
-				{showScrollIndicator && (
-					<div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-40 pointer-events-none">
-						<div className="bg-slate-800/90 backdrop-blur-sm border border-slate-600 rounded-full px-4 py-2 shadow-lg">
-							<div className="flex items-center gap-2 text-slate-400 text-sm">
-								<span>Scroll to see more</span>
-								<svg className="w-4 h-4 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-								</svg>
+								</p>
+								<p className="text-slate-600 text-sm mb-6">
+									Create your first section to organize your components
+								</p>
+								<button
+									onClick={onAddSection}
+									className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white px-6 py-3 rounded-lg font-medium transition-all shadow-lg flex items-center gap-2 mx-auto"
+								>
+									<svg
+										className="w-4 h-4"
+										fill="none"
+										stroke="currentColor"
+										viewBox="0 0 24 24"
+									>
+										<path
+											strokeLinecap="round"
+											strokeLinejoin="round"
+											strokeWidth={2}
+											d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+										/>
+									</svg>
+									Create First Section
+								</button>
 							</div>
 						</div>
-					</div>
-				)}
+					) : (
+						/* Show sections with components */
+						<div className="space-y-6">
+							{sections.map((section) => (
+								<div
+									key={section.id}
+									onClick={() => onSelectSection(section.id)}
+									className={`relative w-full rounded-lg border-2 transition-all duration-200 mb-6 cursor-pointer ${
+										selectedSectionId === section.id
+											? "border-indigo-500 bg-indigo-500/10"
+											: "border-slate-600 hover:border-slate-500"
+									}`}
+									style={{
+										backgroundColor: section.backgroundColor || "#1e293b",
+										padding: section.padding || "2rem 1rem",
+										minHeight: section.minHeight || "200px",
+									}}
+									onDragOver={(e) => {
+										e.preventDefault();
+										e.dataTransfer.dropEffect = "copy";
+									}}
+									onDrop={(e) => {
+										e.preventDefault();
+										e.stopPropagation(); // Prevent bubbling to parent Canvas
+										const componentType = e.dataTransfer.getData(
+											"application/component-type"
+										) as ComponentType;
+										if (componentType) {
+											onAddComponent(componentType, undefined, section.id);
+										}
+										setIsDraggingNewComponent(null);
+										draggedComponentType.current = null;
+									}}
+								>
+									{/* Section Header */}
+									<div
+										className={`absolute -top-6 left-4 px-3 py-1 rounded-t-lg shadow-lg ${
+											selectedSectionId === section.id
+												? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white"
+												: "bg-slate-700"
+										}`}
+									>
+										<span
+											className={`text-sm font-medium flex items-center gap-2 ${
+												selectedSectionId === section.id
+													? "text-white"
+													: "text-slate-300"
+											}`}
+										>
+											<svg
+												className="w-4 h-4"
+												fill="none"
+												stroke="currentColor"
+												viewBox="0 0 24 24"
+											>
+												<path
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													strokeWidth={2}
+													d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+												/>
+											</svg>
+											{section.name}
+										</span>
+										{selectedSectionId === section.id && (
+											<span className="text-xs opacity-75 flex items-center gap-1">
+												<svg
+													className="w-3 h-3"
+													fill="none"
+													stroke="currentColor"
+													viewBox="0 0 24 24"
+												>
+													<path
+														strokeLinecap="round"
+														strokeLinejoin="round"
+														strokeWidth={2}
+														d="M5 3l14 9-14 9V3z"
+													/>
+												</svg>
+												Active Section
+											</span>
+										)}
+									</div>
+
+									{/* Section Content */}
+									<div className="relative min-h-full">
+										{components.filter((comp) => comp.sectionId === section.id)
+											.length === 0 ? (
+											<div className="flex items-center justify-center h-32 rounded-lg border-2 border-dashed border-slate-600 bg-slate-800/30">
+												<div className="text-center">
+													<div className="text-4xl mb-2">🎯</div>
+													<p className="text-slate-500 font-medium">
+														Drop components here!
+													</p>
+													<p className="text-slate-600 text-sm mt-1">
+														Drag from the left panel or click "Add" button
+													</p>
+												</div>
+											</div>
+										) : (
+											<div className="space-y-4">
+												{components
+													.filter((comp) => comp.sectionId === section.id)
+													.map((comp) => (
+														<RenderedComponent
+															key={comp.id}
+															component={comp}
+															isSelected={selectedComponentId === comp.id}
+															onSelect={() => onSelectComponent(comp.id)}
+															onDelete={() => onDeleteComponent(comp.id)}
+															onUpdateComponent={onUpdateComponent}
+														/>
+													))}
+											</div>
+										)}
+									</div>
+								</div>
+							))}
+						</div>
+					)}
+
+					{/* Scroll Indicator - shows when there's more content below */}
+					{showScrollIndicator && (
+						<div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-40 pointer-events-none">
+							<div className="bg-slate-800/90 backdrop-blur-sm border border-slate-600 rounded-full px-4 py-2 shadow-lg">
+								<div className="flex items-center gap-2 text-slate-400 text-sm">
+									<span>Scroll to see more</span>
+									<svg
+										className="w-4 h-4 animate-bounce"
+										fill="none"
+										stroke="currentColor"
+										viewBox="0 0 24 24"
+									>
+										<path
+											strokeLinecap="round"
+											strokeLinejoin="round"
+											strokeWidth={2}
+											d="M19 14l-7 7m0 0l-7-7m7 7V3"
+										/>
+									</svg>
+								</div>
+							</div>
+						</div>
+					)}
 				</div>
 			</div>
 		</div>

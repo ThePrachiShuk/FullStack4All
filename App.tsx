@@ -167,7 +167,7 @@ const App: React.FC = () => {
 	);
 
 	return (
-		<div className="h-screen w-screen flex flex-col font-sans">
+		<div className="h-screen w-screen flex flex-col font-sans bg-slate-900">
 			<header className="bg-slate-800 border-b border-slate-700 p-3 flex justify-between items-center z-10 shadow-md">
 				<div className="flex items-center gap-2">
 					<div className="p-2 bg-indigo-600 rounded-lg">
@@ -610,8 +610,8 @@ const App: React.FC = () => {
 					</>
 				)}
 				{activeTab === "backend" && (
-					<div className="flex-1 p-8 bg-slate-900 flex justify-center items-start">
-						<div className="w-full max-w-2xl space-y-6">
+					<div className="flex-1 p-8 flex justify-center items-start bg-slate-900">
+						<div className="w-full max-w-2xl space-y-6 bg-slate-800 rounded-xl p-8 border border-slate-700">
 							<h2 className="text-3xl font-bold text-white">
 								Describe Your Backend Logic
 							</h2>
