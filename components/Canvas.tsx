@@ -354,7 +354,25 @@ export const Canvas: React.FC<CanvasProps> = ({
 }) => {
 	const [isDraggingNewComponent, setIsDraggingNewComponent] =
 		useState<ComponentType | null>(null);
+	const [showScrollIndicator, setShowScrollIndicator] = useState(false);
 	const draggedComponentType = useRef<ComponentType | null>(null);
+
+	// Check if content extends beyond viewport
+	React.useEffect(() => {
+		const checkScrollNeeded = () => {
+			const scrollContainer = document.querySelector('.canvas-scroll-container') as HTMLElement;
+			if (scrollContainer) {
+				const hasScroll = scrollContainer.scrollHeight > scrollContainer.clientHeight;
+				setShowScrollIndicator(hasScroll);
+			}
+		};
+
+		// Check on mount and when sections change
+		setTimeout(checkScrollNeeded, 100);
+		window.addEventListener('resize', checkScrollNeeded);
+		
+		return () => window.removeEventListener('resize', checkScrollNeeded);
+	}, [sections]);
 
 	// Handle drop from component palette
 	const handleCanvasDragOver = (e: React.DragEvent) => {
@@ -378,31 +396,37 @@ export const Canvas: React.FC<CanvasProps> = ({
 
 	return (
 		<div
-			className="flex-1 p-8 bg-slate-900 overflow-y-auto"
+			className="canvas-scroll-container flex-1 h-full overflow-y-auto overflow-x-hidden bg-slate-900"
 			onDragOver={handleCanvasDragOver}
 			onDrop={handleCanvasDrop}
+			style={{
+				scrollBehavior: 'smooth',
+				// Ensure proper scrolling on all devices
+				WebkitOverflowScrolling: 'touch'
+			}}
 		>
-			<div className="max-w-4xl mx-auto bg-dots rounded-lg p-6 min-h-[600px]">
-				{/* Header with Add Section button */}
-				<div className="mb-6 flex justify-between items-center">
-					<h2 className="text-lg font-semibold text-slate-300 flex items-center gap-2">
-						<svg
-							className="w-5 h-5"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-						>
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								strokeWidth={2}
-								d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a4 4 0 004-4V5z"
-							/>
-						</svg>
-						Canvas
-					</h2>
-					<button
-						onClick={onAddSection}
+			<div className="p-8">
+				<div className="max-w-4xl mx-auto bg-dots rounded-lg p-6 min-h-screen">
+					{/* Header with Add Section button */}
+					<div className="mb-6 flex justify-between items-center sticky top-0 bg-slate-900/90 backdrop-blur-sm z-10 py-4 -mt-4 rounded-lg">
+						<h2 className="text-lg font-semibold text-slate-300 flex items-center gap-2">
+							<svg
+								className="w-5 h-5"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth={2}
+									d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a4 4 0 004-4V5z"
+								/>
+							</svg>
+							Canvas
+						</h2>
+						<button
+							onClick={onAddSection}
 						className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-lg flex items-center gap-2"
 					>
 						<svg
@@ -421,6 +445,22 @@ export const Canvas: React.FC<CanvasProps> = ({
 						Add Section
 					</button>
 				</div>
+
+				{/* Scroll to Top Button - Fixed Position */}
+				<button
+					onClick={() => {
+						const scrollContainer = document.querySelector('.canvas-scroll-container');
+						if (scrollContainer) {
+							scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
+						}
+					}}
+					className="fixed top-24 right-8 z-50 p-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-full shadow-lg transition-all opacity-75 hover:opacity-100"
+					title="Scroll to Top"
+				>
+					<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+					</svg>
+				</button>
 
 				{/* Show section-based layout */}
 				{sections.length === 0 ? (
@@ -635,6 +675,21 @@ export const Canvas: React.FC<CanvasProps> = ({
 						))}
 					</div>
 				)}
+				
+				{/* Scroll Indicator - shows when there's more content below */}
+				{showScrollIndicator && (
+					<div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-40 pointer-events-none">
+						<div className="bg-slate-800/90 backdrop-blur-sm border border-slate-600 rounded-full px-4 py-2 shadow-lg">
+							<div className="flex items-center gap-2 text-slate-400 text-sm">
+								<span>Scroll to see more</span>
+								<svg className="w-4 h-4 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+								</svg>
+							</div>
+						</div>
+					</div>
+				)}
+				</div>
 			</div>
 		</div>
 	);

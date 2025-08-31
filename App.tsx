@@ -275,7 +275,7 @@ const App: React.FC = () => {
 						)}
 
 						{/* Canvas */}
-						<div className="flex-1 relative">
+						<div className="flex-1 relative h-full overflow-hidden">
 							<Canvas
 								components={canvasComponents}
 								sections={sections}
